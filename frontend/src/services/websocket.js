@@ -1,29 +1,20 @@
 import socketIOClient from "socket.io-client";
 
-const socket = socketIOClient('http://192.168.0.6:3001');
-
-function subscribeToNewNotification(subscribeFunction) {
-  socket.on('new-notification', subscribeFunction);
-}
-
-function connect({ userId }) {
-  socket.io.opts.query = {
-    userId
-  }
+function connect(userId) {
+  const socket = socketIOClient(`http://localhost:3001?userId=${userId}`);
   socket.connect();
-  setTimeout(()=>{
-    alert(socket.connected);
-  },3000)
+  return socket;
 }
 
-function disconnect() {
-  if(socket.connected){
+function subscribeToNewNotification(socket, subscribeFunction) {
+  if (socket === "") return;
+  socket.on("new-notification", subscribeFunction);
+}
+
+function disconnect(socket) {
+  if (socket.connected) {
     socket.disconnect();
   }
 }
 
-export { 
-  connect,
-  disconnect ,
-  subscribeToNewNotification
-};
+export { connect, disconnect, subscribeToNewNotification };
